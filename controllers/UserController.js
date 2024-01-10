@@ -1,32 +1,40 @@
-const usermodel = require('../models/usermodel');
+const userModel = require("../models/userModel");
 
-
-//register 
-const logincontrol = async (req, res) => {          
-    try {
-        const { email, password } = req.body;
-        const user = await usermodel.findOne({ email, password })
-        if (!user) {
-            res.status(400).json({ success: false, message: 'User not found' })
-        }
-        res.status(200).json({ success: true, message: 'User found' })
-
-
-    } catch (err) {
-        res.status(400).json({ success: false, message: err.message })
+// login callback
+const loginController = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email, password });
+    if (!user) {
+      return res.status(404).send("User Not Found");
     }
-}
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error,
+    });
+  }
+};
 
-    //login
-    const registercontrol = async (req,res) => {
-        try{
-            const newUser = new usermodel(req.body);
-            await newUser.save();
-            res.status(200).json({success: true, message: 'User registered'})
+//Register Callback
+const registerController = async (req, res) => {
+  try {
+    const newUser = new userModel(req.body);
+    await newUser.save();
+    res.status(201).json({
+      success: true,
+      newUser,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error,
+    });
+  }
+};
 
-        }catch(err){
-            res.status(400).json({success: false, message: err.message})
-        }
-     }
-
-    module.exports = { logincontrol, registercontrol }
+module.exports = { loginController, registerController };
